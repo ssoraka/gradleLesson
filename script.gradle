@@ -1,0 +1,131 @@
+//свойства - поля внутри Closure
+ext {
+    javaVersion = 16
+    currentDate = LocalDate.now()
+}
+
+println ext.javaVersion
+println project.ext.javaVersion
+println javaVersion
+println project.javaVersion
+
+println "----All properties:"
+println project.properties
+
+println "----System:"
+println System.getProperty("sys.example")
+
+//gradle first -Dsys.example=param1 -PprojectParam1=param2
+//println project."projectParam1"
+
+
+println "configuration phase"
+println "gradle id: ${gradle.hashCode()}"
+println "root: ${rootProject.hashCode()}, ${project.hashCode()}, ${gradle.rootProject.hashCode()}"
+
+
+//1
+//task("hello")
+//tasks.findByName("hello").
+//hello.description = "Hello task"
+//hello.group = "dmdev"
+
+//2
+//task("hello")
+//hello.configure Closure
+//hello {
+//    println "configuration phase. Task hello"
+//    description = "Hello task"
+//    group = "dmdev"
+//}
+
+//3
+//task hello {
+//    println "configuration phase. Task hello"
+//    description = "Hello task"
+//    group = "dmdev"
+//}
+
+//4
+//def map = [description: "Hello task", group: "dmdev"]
+//task(map, "hello") {
+//}
+
+//5
+//task hello(description: "Hello task", group: "dmdev", type: DefaultTask) {
+//    println "configuration phase. Task hello"
+//    println "task $description, group $group, actions: ${actions.size()} "
+//
+//    doLast {
+//        println "execution phase, Action 1"
+//    }
+//    doFirst {
+//        println "execution phase, Action 2"
+//    }
+//    doLast {
+//        println "execution phase, Action 3"
+//    }
+//    println "task $description, group $group, actions: ${actions.size()} "
+//    println "path $path"
+//}
+
+//hello.doFirst {
+//
+//}
+
+task first {
+    doLast {
+        println "Task 1"
+    }
+}
+
+task second {
+    doLast {
+        println "Task 2"
+    }
+}
+
+task third {
+    doLast {
+        println "Task 3"
+    }
+}
+
+task fourth(group: "dmdev") {
+    doLast {
+        println "Task 4"
+    }
+}
+
+
+//fourth.dependsOn second
+//second.dependsOn first
+//second.finalizedBy third
+
+fourth.dependsOn first
+fourth.dependsOn second
+fourth.dependsOn third
+
+//нет зависимостей, но есть порядок
+second.mustRunAfter first
+second.shouldRunAfter first
+
+
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+    println "------ Graph:"
+    graph.allTasks.each {
+        println "${it.name}"
+    }
+}
+
+gradle.taskGraph.beforeTask { Task task ->
+    if (task.group == 'dmdev') {
+        println "beforeTask callback $task"
+    }
+}
+
+gradle.taskGraph.afterTask { Task task ->
+    if (task.name == 'first') {
+        println "afterTask callback $task"
+    }
+}
