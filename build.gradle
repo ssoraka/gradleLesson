@@ -8,6 +8,44 @@ apply from: 'script.gradle'
 apply plugin: CustomPlugin
 
 
+repositories {
+//    mavenLocal() //~/.m2/repository
+//    maven {
+//        name "nexus dmdev"
+//        url "https://nexus.dmdev/repository"
+//    }
+    mavenCentral()
+}
+
+configurations {
+    Configuration configurationImpl = getByName("implementation")
+
+    dima {
+        description = "dima configuration"
+    }
+    configurationImpl.extendsFrom(dima)
+
+    all {
+        resolutionStrategy {
+            force('org.springframework:spring-aop:5.3.8')
+        }
+    }
+}
+
+dependencies {
+    compileOnly platform('org.springframework.boot:spring-boot-dependencies:2.5.3')
+//    add ('implementation', [group:"org.springframework", name:"spring-webmvc", version: "5.3.9"])
+//    add ('implementation', "org.springframework:spring-webmvc:5.3.9")
+    implementation("org.springframework:spring-webmvc") {
+//        transitive(false) //ислючить все транзитивные зависимости
+//        exclude(group:'org.springframework', module:'spring-aop')
+    }
+//    dima "org.springframework:spring-webmvc:5.3.9"
+    implementation("org.springframework:spring-aop:5.3.8") {
+//        force(true) //установить версию
+    }
+}
+
 sourceSets {
     //https://docs.gradle.org/current/userguide/java_plugin.html
     main {
