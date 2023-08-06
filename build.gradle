@@ -7,6 +7,19 @@ plugins {
 apply from: 'script.gradle'
 apply plugin: CustomPlugin
 
+//для проектов
+allprojects {
+    group "dmdev"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+//для подпроектов
+subprojects {
+
+}
 
 repositories {
 //    mavenLocal() //~/.m2/repository
@@ -36,7 +49,7 @@ dependencies {
     compileOnly platform('org.springframework.boot:spring-boot-dependencies:2.5.3')
 //    add ('implementation', [group:"org.springframework", name:"spring-webmvc", version: "5.3.9"])
 //    add ('implementation', "org.springframework:spring-webmvc:5.3.9")
-    implementation("org.springframework:spring-webmvc") {
+    implementation("org.springframework:spring-webmvc:5.3.9") {
 //        transitive(false) //ислючить все транзитивные зависимости
 //        exclude(group:'org.springframework', module:'spring-aop')
     }
@@ -45,6 +58,27 @@ dependencies {
 //        force(true) //установить версию
     }
 }
+
+configurations."runtimeClasspath".files.each {println it}
+
+jar {
+    def jars = configurations."runtimeClasspath".files.collect {"lib/$it.name"}
+
+    manifest {
+        attributes 'Main-class': 'com.dmdev.HelloWorld',
+                    'Class-Path': jars.join(' ')
+    }
+//    разархивируем библиотеки и складываем классы в корень проекта
+//    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+//    from(configurations."runtimeClasspath".files.collect {project.zipTree(it)})
+}
+
+task copyAllDependencies(type: Copy) {
+    from(configurations."runtimeClasspath".files)
+    into("$buildDir/libs/lib")
+}
+
+jar.dependsOn copyAllDependencies
 
 sourceSets {
     //https://docs.gradle.org/current/userguide/java_plugin.html

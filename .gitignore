@@ -1,2 +1,8 @@
 /.idea/
 /.gradle/
+/web/build/
+/service/build/
+/database/build/
+/common/util/build/
+/common/core/build/
+/build/
