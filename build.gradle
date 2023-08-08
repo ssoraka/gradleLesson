@@ -1,11 +1,14 @@
+//import com.dmdev.plugin.CustomPlugin
+
 //https://docs.gradle.org/current/userguide/java_plugin.html
 plugins {
     id 'java'
+    id 'custom-dmdev'
 }
 //apply plugin: 'java'
 
 apply from: 'script.gradle'
-apply plugin: CustomPlugin
+//apply plugin: CustomPlugin
 
 //для проектов
 allprojects {
@@ -29,6 +32,13 @@ repositories {
 //    }
     mavenCentral()
 }
+
+//используется по умолчанию вместо градла с компьютера
+//./gradlew build
+wrapper {
+    gradleVersion "7.4"
+}
+
 
 configurations {
     Configuration configurationImpl = getByName("implementation")
@@ -92,29 +102,5 @@ sourceSets {
     }
     test {
 
-    }
-}
-
-
-class CustomPlugin implements Plugin<Project> {
-    @Override
-    void apply(Project project) {
-        def map = [description: "Hello task", group: "dmdev", type: DefaultTask]
-        project.task(map, "hello") {
-            println "configuration phase. Task hello"
-            println "task $description, group $group, actions: ${actions.size()} "
-
-            doLast {
-                println "execution phase, Action 1"
-            }
-            doFirst {
-                println "execution phase, Action 2"
-            }
-            doLast {
-                println "execution phase, Action 3"
-            }
-            println "task $description, group $group, actions: ${actions.size()} "
-            println "path $path"
-        }
     }
 }

@@ -1,8 +1,16 @@
+//import com.dmdev.plugin.CustomPlugin
+import com.dmdev.task.ReleaseTask
+
 plugins {
     id 'java'
+    id 'jacoco'
+    id 'custom-dmdev'
 }
 
-group 'org.example'
+
+//apply plugin: CustomPlugin
+
+//group 'dmdev'
 
 repositories {
     mavenCentral()
@@ -18,5 +26,29 @@ dependencies {
 }
 
 test {
+    maxParallelForks 3 //выполнять в 3 потоках
     useJUnitPlatform()
 }
+
+//устанавливаем зависимость на плагин jacoco при запуске тестов
+test.finalizedBy jacocoTestReport
+jacocoTestReport.dependsOn test
+
+
+ext {
+    release = false
+}
+
+task makeRelease(type: ReleaseTask) {
+    release = project.release
+    releaseFile = new File("$rootDir/script.gradle")
+}
+
+//task makeRelease {
+//    inputs.property("release", project.release)
+//    outputs.file("$rootDir/script.gradle")
+//
+//    doLast {
+//        println "release in progress.."
+//    }
+//}

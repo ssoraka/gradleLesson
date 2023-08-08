@@ -6,3 +6,5 @@
 /common/util/build/
 /common/core/build/
 /build/
+/buildSrc/.gradle/
+/buildSrc/build/
